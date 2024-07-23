@@ -14,6 +14,7 @@ const server = net.createServer((socket) => {
       socket.write("HTTP/1.1 200 OK\r\n\r\n");
     } else if (url.startsWith("/echo/")) {
       const content = url.split("/echo/")[1];
+      console.log(content);
       const headers = request.split("\r\n");
       const AcceptEncoding = headers.find((header) =>
         header.startsWith("Accept-Encoding:")
@@ -22,15 +23,15 @@ const server = net.createServer((socket) => {
         ? AcceptEncoding.split(": ")[1]
         : null;
       var ContentEncoding = "";
-      var shit;
       if (AcceptEncodingtype === "gzip") {
         ContentEncoding = "Content-Encoding: gzip";
       }
+      console.log(AcceptEncoding);
       socket.write(
         `HTTP/1.1 200 OK\r\n` +
           `Content-Type: text/plain\r\n` +
           `Content-Length: ${content.length}\r\n` +
-          `${ContentEncoding}\r\n` +
+          `${ContentEncoding ? ContentEncoding + "\r\n" : ""}` +
           `\r\n` +
           `${content}`
       );
