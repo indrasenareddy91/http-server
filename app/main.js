@@ -8,6 +8,7 @@ const server = net.createServer((socket) => {
     const request = data.toString();
     // so to get the path we just need to split the string with space delimeter and it will return an array
     const url = request.split(" ")[1];
+    const method = request.split(" ")[0];
     if (url == "/") {
       socket.write("HTTP/1.1 200 OK\r\n\r\n");
     } else if (url.includes("/echo/")) {
