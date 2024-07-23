@@ -17,33 +17,47 @@ const server = net.createServer((socket) => {
     } else if (url.startsWith("/echo/")) {
       const content = url.split("/echo/")[1];
       console.log(content);
+
       const headers = request.split("\r\n");
       const AcceptEncoding = headers.find((header) =>
         header.startsWith("Accept-Encoding:")
       );
+
       const AcceptEncodingtype = AcceptEncoding
-        ? AcceptEncoding.split(":")
+        ? AcceptEncoding.split(":")[1].trim()
         : null;
 
-      const AcceptEncodingtypes = AcceptEncoding
-        ? AcceptEncodingtype[1].split(",")
-        : "";
+      const AcceptEncodingtypes = AcceptEncodingtype
+        ? AcceptEncodingtype.split(",").map((type) => type.trim())
+        : [];
+
       console.log(AcceptEncodingtypes);
-      var ContentEncoding = "";
-      if (AcceptEncodingtypes.includes(" gzip")) {
+
+      let ContentEncoding = "";
+      if (AcceptEncodingtypes.includes("gzip")) {
         ContentEncoding = "Content-Encoding: gzip";
       }
-      console.log(AcceptEncoding);
-      const bodyEncoded = zlib.gzipSync(content);
+
+      console.log(ContentEncoding);
+
+      let bodyEncoded = Buffer.from(content, "utf8");
+      if (ContentEncoding) {
+        bodyEncoded = zlib.gzipSync(content);
+      }
+
       const bodyEncodedLength = bodyEncoded.length;
-      socket.write(
-        `HTTP/1.1 200 OK\r\n` +
-          `Content-Type: text/plain\r\n` +
-          `Content-Length: ${bodyEncodedLength}\r\n` +
-          `${ContentEncoding ? ContentEncoding + "\r\n" : ""}` +
-          `\r\n` +
-          `${bodyEncoded}`
-      );
+
+      // Create the response headers
+      const responseHeaders = [
+        "HTTP/1.1 200 OK",
+        "Content-Type: text/plain",
+        `Content-Length: ${bodyEncodedLength}`,
+        ContentEncoding,
+      ]
+        .filter(Boolean)
+        .join("\r\n");
+      socket.write(responseHeaders + "\r\n\r\n");
+      socket.write(bodyEncoded);
     } else if (url.includes("/user-agent")) {
       const headers = request.split("\r\n");
       const userAgentHeader = headers.find((header) =>
