@@ -56,7 +56,7 @@ const server = net.createServer((socket) => {
           `${content}`;
         socket.write(res);
       } else {
-        socket.write(`'${httpversion}', Received: "HTTP-ver"`);
+        socket.write("HTTP/1.1 404 Not Found\r\n\r\n");
       }
     } else if (url.startsWith("/files/") && method === "POST") {
       const filename = process.argv[3] + "/" + url.substring(7);
