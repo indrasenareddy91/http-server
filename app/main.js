@@ -23,7 +23,7 @@ const server = net.createServer((socket) => {
         ? AcceptEncoding.split(": ")[1]
         : null;
       var ContentEncoding = "";
-      if (AcceptEncodingtype === "gzip") {
+      if (AcceptEncodingtype.includes("gzip")) {
         ContentEncoding = "Content-Encoding: gzip";
       }
       console.log(AcceptEncoding);
