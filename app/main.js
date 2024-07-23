@@ -13,8 +13,19 @@ const server = net.createServer((socket) => {
       socket.write("HTTP/1.1 200 OK\r\n\r\n");
     } else if (url.includes("/echo/")) {
       const content = url.split("/echo/")[1];
+      const headers = request.split("\r\n");
+      const AcceptEncoding = headers.find((header) =>
+        header.startsWith("Accept-Encoding:")
+      );
+      const AcceptEncodingtype = AcceptEncoding
+        ? AcceptEncoding.split(": ")[1]
+        : null;
+      var ContentEncoding = "";
+      if (AcceptEncodingtype === "gzip") {
+        ContentEncoding = "Content-Encoding : gzip";
+      }
       socket.write(
-        `HTTP/1.1 200 OK\r\nContent-Type: text/plain\r\nContent-Length: ${content.length}\r\n\r\n${content}`
+        `HTTP/1.1 200 OK\r\nContent-Type: text/plain\r\nContent-Length: ${content.length}\r\n${ContentEncoding}\r\n${content}`
       );
     } else if (url.includes("/user-agent")) {
       const headers = request.split("\r\n");
