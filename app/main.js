@@ -46,19 +46,15 @@ const server = net.createServer((socket) => {
     } else if (url.startsWith("/files/") && method === "GET") {
       const directory = process.argv[3];
       const filename = url.split("/files/")[1];
-      if (fs.existsSync(filePath)) {
-        const content = fs.readFileSync(filePath);
-
-        // Create the HTTP response headers and body
-        const headers = [
-          "HTTP/1.1 200 OK",
-          "Content-Type: application/octet-stream",
-          `Content-Length: ${content.length}`,
-        ];
-
-        const response = headers.join("\r\n") + "\r\n\r\n" + content;
-
-        socket.write(response);
+      if (fs.existsSync(`${directory}/${filename}`)) {
+        const content = fs.readFileSync(`${directory}/${filename}`).toString();
+        const res =
+          `HTTP/1.1 200 OK\r\n` +
+          `Content-Type: application/octet-stream\r\n` +
+          `Content-Length: ${content.length}\r\n` +
+          `\r\n` + // Blank line between headers and body
+          `${content}`;
+        socket.write(res);
       } else {
         socket.write("HTTP/1.1 404 Not Found\r\n\r\n");
       }
