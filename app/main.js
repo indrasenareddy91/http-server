@@ -11,7 +11,7 @@ const server = net.createServer((socket) => {
     const method = request.split(" ")[0];
     if (url == "/") {
       socket.write("HTTP/1.1 200 OK\r\n\r\n");
-    } else if (url.includes("/echo/")) {
+    } else if (url.startsWith("/echo/")) {
       const content = url.split("/echo/")[1];
       const headers = request.split("\r\n");
       const AcceptEncoding = headers.find((header) =>
