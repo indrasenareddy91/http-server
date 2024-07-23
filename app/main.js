@@ -9,6 +9,7 @@ const server = net.createServer((socket) => {
     // so to get the path we just need to split the string with space delimeter and it will return an array
     const url = request.split(" ")[1];
     const method = request.split(" ")[0];
+    const httpversion = request.split(" ")[2];
     if (url == "/") {
       socket.write("HTTP/1.1 200 OK\r\n\r\n");
     } else if (url.startsWith("/echo/")) {
@@ -55,7 +56,7 @@ const server = net.createServer((socket) => {
           `${content}`;
         socket.write(res);
       } else {
-        socket.write('HTTP-version, Received: ""');
+        socket.write(`'${httpversion}', Received: "HTTP-ver"`);
       }
     } else if (url.startsWith("/files/") && method === "POST") {
       const filename = process.argv[3] + "/" + url.substring(7);
