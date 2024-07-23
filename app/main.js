@@ -1,5 +1,7 @@
 const net = require("net");
 const fs = require("fs");
+const zlib = require("zlib"); // library to compress gzip data
+
 // You can use print statements as follows for debugging, they'll be visible when running tests.
 console.log("Logs from your program will appear here!");
 
@@ -32,13 +34,15 @@ const server = net.createServer((socket) => {
         ContentEncoding = "Content-Encoding: gzip";
       }
       console.log(AcceptEncoding);
+      const bodyEncoded = zlib.gzipSync(content);
+      const bodyEncodedLength = bodyEncoded.length;
       socket.write(
         `HTTP/1.1 200 OK\r\n` +
           `Content-Type: text/plain\r\n` +
-          `Content-Length: ${content.length}\r\n` +
+          `Content-Length: ${bodyEncodedLength}\r\n` +
           `${ContentEncoding ? ContentEncoding + "\r\n" : ""}` +
           `\r\n` +
-          `${content}`
+          `${bodyEncoded}`
       );
     } else if (url.includes("/user-agent")) {
       const headers = request.split("\r\n");
