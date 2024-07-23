@@ -54,6 +54,8 @@ const server = net.createServer((socket) => {
           `\r\n` + // Blank line between headers and body
           `${content}`;
         socket.write(res);
+      } else {
+        socket.write('HTTP-version, Received: ""');
       }
     } else if (url.startsWith("/files/") && method === "POST") {
       const filename = process.argv[3] + "/" + url.substring(7);
