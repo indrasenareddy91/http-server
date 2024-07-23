@@ -25,7 +25,12 @@ const server = net.createServer((socket) => {
         ContentEncoding = "Content-Encoding: gzip";
       }
       socket.write(
-        `HTTP/1.1 200 OK\r\nContent-Type: text/plain\r\nContent-Length: ${content.length}\r\n${ContentEncoding}\r\n${content}`
+        `HTTP/1.1 200 OK\r\n` +
+          `Content-Type: text/plain\r\n` +
+          `Content-Length: ${content.length}\r\n` +
+          `${ContentEncoding}\r\n` +
+          `\r\n` +
+          `${content}`
       );
     } else if (url.includes("/user-agent")) {
       const headers = request.split("\r\n");
