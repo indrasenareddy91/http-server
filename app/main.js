@@ -9,9 +9,19 @@ const server = net.createServer((socket) => {
     const request = data.toString();
     console.log(request);
     // so to get the path we just need to split the string with space delimeter and it will return an array
-    const path = request.split(" ")[1];
+    const url = request.split(" ")[1];
     const status = path === "/" ? "200 OK" : "404 Not Found";
-    socket.write(`HTTP/1.1 ${status}\r\n\r\n`);
+    if (url == "/") {
+      socket.write("HTTP/1.1 200 OK\r\n\r\n");
+    } else if (url.includes("/echo/")) {
+      const content = url.split("/echo/")[1];
+      socket.write(
+        `HTTP/1.1 200 OK\r\nContent-Type: text/plain\r\nContent-Length: ${content.length}\r\n\r\n${content}`
+      );
+    } else {
+      socket.write("HTTP/1.1 404 Not Found\r\n\r\n");
+    }
+
     socket.end();
   });
   socket.on("close", (data) => {
