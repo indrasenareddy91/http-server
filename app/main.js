@@ -22,7 +22,7 @@ const server = net.createServer((socket) => {
         : null;
       var ContentEncoding = "";
       if (AcceptEncodingtype === "gzip") {
-        ContentEncoding = "Content-Encoding : gzip";
+        ContentEncoding = "Content-Encoding: gzip";
       }
       socket.write(
         `HTTP/1.1 200 OK\r\nContent-Type: text/plain\r\nContent-Length: ${content.length}\r\n${ContentEncoding}\r\n${content}`
