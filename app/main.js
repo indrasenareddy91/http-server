@@ -47,10 +47,13 @@ const server = net.createServer((socket) => {
       const filename = url.split("/files/")[1];
       if (fs.existsSync(`${directory}/${filename}`)) {
         const content = fs.readFileSync(`${directory}/${filename}`).toString();
-        const res = `HTTP/1.1 200 OK\r\nContent-Type: application/octet-stream\r\nContent-Length: ${content.length}\r\n${content}\r\n\r\n`;
+        const res =
+          `HTTP/1.1 200 OK\r\n` +
+          `Content-Type: application/octet-stream\r\n` +
+          `Content-Length: ${content.length}\r\n` +
+          `\r\n` + // Blank line between headers and body
+          `${content}`;
         socket.write(res);
-      } else {
-        socket.write("HTTP/1.1 404 Not Found\r\n\r\n");
       }
     } else if (url.startsWith("/files/") && method === "POST") {
       const filename = process.argv[3] + "/" + url.substring(7);
