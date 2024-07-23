@@ -24,7 +24,7 @@ const server = net.createServer((socket) => {
       socket.write(
         `HTTP/1.1 200 OK\r\nContent-Type: text/plain\r\nContent-Length: ${userAgent.length}\r\n\r\n${userAgent}`
       );
-    } else if (url.startsWith("/files/")) {
+    } else if (url.startsWith("/files/") && method === "GET") {
       const directory = process.argv[3];
       const filename = url.split("/files/")[1];
       if (fs.existsSync(`${directory}/${filename}`)) {
@@ -34,6 +34,12 @@ const server = net.createServer((socket) => {
       } else {
         socket.write("HTTP/1.1 404 Not Found\r\n\r\n");
       }
+    } else if (url.startsWith("/files/") && method === "POST") {
+      const filename = process.argv[3] + "/" + url.substring(7);
+      const req = data.toString().split("\r\n");
+      const body = req[req.length - 1];
+      fs.writeFileSync(filename, body);
+      socket.write(`HTTP/1.1 201 CREATED\r\n\r\n`);
     } else {
       socket.write("HTTP/1.1 404 Not Found\r\n\r\n");
     }
