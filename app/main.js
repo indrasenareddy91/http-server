@@ -5,9 +5,7 @@ console.log("Logs from your program will appear here!");
 
 const server = net.createServer((socket) => {
   socket.on("data", (data) => {
-    console.log(data); //buffer object with ascii
     const request = data.toString();
-    console.log(request);
     // so to get the path we just need to split the string with space delimeter and it will return an array
     const url = request.split(" ")[1];
     if (url == "/") {
@@ -16,6 +14,15 @@ const server = net.createServer((socket) => {
       const content = url.split("/echo/")[1];
       socket.write(
         `HTTP/1.1 200 OK\r\nContent-Type: text/plain\r\nContent-Length: ${content.length}\r\n\r\n${content}`
+      );
+    } else if (url.includes("/user-agent")) {
+      const headers = request.split("\r\n");
+      const userAgentHeader = headers.find((header) =>
+        header.startsWith("User-Agent:")
+      );
+      const userAgent = userAgentHeader ? userAgentHeader.split(": ")[1] : null;
+      socket.write(
+        `HTTP/1.1 200 OK\r\nContent-Type: text/plain\r\nContent-Length: ${userAgent.length}\r\n\r\n${userAgent}`
       );
     } else {
       socket.write("HTTP/1.1 404 Not Found\r\n\r\n");
@@ -26,7 +33,6 @@ const server = net.createServer((socket) => {
   socket.on("close", (data) => {
     console.log(data);
     socket.end();
-    socket.close();
   });
 });
 
